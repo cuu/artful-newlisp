@@ -23,16 +23,16 @@
   (case (type-of lisp)
     ("boolean" (if lisp "true" "false"))
     ("quote" (Lisp->Json (eval lisp)))
-    ("symbol" (format "'%s'" (name lisp)))
-    ("string" (format "'%s'" (simple-escape lisp)))
+    ("symbol" (format "\"%s\"" (term lisp)))
+    ("string" (format "\"%s\"" (simple-escape lisp)))
     ("integer" (string lisp))
     ("float" (string lisp))
     ("list" (if (assoc? lisp)
                 (format "{ %s }"
                         (join (map (fn (pair)
-                                     (format "'%s': %s"
+                                     (format "\"%s\": %s"
                                              (if (symbol? (pair 0))
-                                                 (name (pair 0))
+                                                 (term (pair 0))
                                                  (string (pair 0)))
                                              (Lisp->Json (pair 1))))
                                    lisp)
@@ -41,8 +41,8 @@
     ("array" (string "[" (join (map Lisp->Json lisp) ", ") "]"))
     ("context" (let ((values '()))
                  (dotree (s lisp)
-                   (push (format "'%s': %s"
-                                 (name s)
+                   (push (format "\"%s\": %s"
+                                 (term s)
                                  (Lisp->Json (eval s)))
                          values -1))
                  (format "{ %s }" (join values ", "))))
